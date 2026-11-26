@@ -64,23 +64,21 @@
         {
           "target": "dmg",
           "arch": [
-            "arm64",
-            "x64"
+            "arm64"
           ]
         },
         {
           "target": "zip",
           "arch": [
-            "arm64",
-            "x64"
+            "arm64"
           ]
         }
       ],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "extendInfo": {
-        "NSMicrophoneUsageDescription": "LocalCap 需要麦克风权限来录制你的声音。",
-        "NSScreenCaptureUsageDescription": "LocalCap 需要屏幕录制权限来录制你选择的屏幕或窗口。"
+        "NSMicrophoneUsageDescription": "Aurel 需要麦克风权限来录制你的声音。",
+        "NSScreenCaptureUsageDescription": "Aurel 需要屏幕录制权限来录制你选择的屏幕或窗口。"
       },
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",

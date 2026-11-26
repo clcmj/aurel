@@ -4,9 +4,7 @@ cd "$(dirname "$0")"
 
 for file in \
   Aurel-1.0.0-arm64.dmg \
-  Aurel-1.0.0-arm64-mac.zip \
-  Aurel-1.0.0.dmg \
-  Aurel-1.0.0-mac.zip
+  Aurel-1.0.0-arm64-mac.zip
 do
   cat "$file".part.* > "$file"
 done
