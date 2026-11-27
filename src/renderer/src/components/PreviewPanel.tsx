@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createOutputName, formatBytes, formatDuration } from '../../../shared/capture'
 import type { RecordedAsset } from '../../../shared/types'
 import { Icon } from './Icon'
+import { GifTrimDialog } from './GifTrimDialog'
 
 interface PreviewPanelProps {
   asset: RecordedAsset
@@ -13,6 +14,7 @@ export function PreviewPanel({ asset, onNewRecording }: PreviewPanelProps) {
   const [savedPath, setSavedPath] = useState(asset.savedPath ?? '')
   const [saveMode, setSaveMode] = useState<'auto' | 'manual'>(asset.savedPath ? 'auto' : 'manual')
   const [error, setError] = useState('')
+  const [trimOpen, setTrimOpen] = useState(false)
 
   const save = async () => {
     setSaving(true)
@@ -35,13 +37,17 @@ export function PreviewPanel({ asset, onNewRecording }: PreviewPanelProps) {
   }
 
   return (
+    <>
     <section className="preview-panel panel preview-panel--standalone">
       <div className="section-heading section-heading--compact">
         <div>
           <div className="eyebrow">YOUR RECORDING</div>
           <h2>录制完成</h2>
         </div>
-        <span className="success-badge"><Icon name="check" size={14} />已生成</span>
+        <div className="preview-heading-actions">
+          {asset.extension === 'gif' && <button type="button" className="secondary-button gif-trim-open" onClick={() => setTrimOpen(true)}><Icon name="crop" size={15} />剪切 GIF</button>}
+          <span className="success-badge"><Icon name="check" size={14} />已生成</span>
+        </div>
       </div>
 
       <div className="preview-layout">
@@ -70,5 +76,7 @@ export function PreviewPanel({ asset, onNewRecording }: PreviewPanelProps) {
         </div>
       </div>
     </section>
+    {trimOpen && <GifTrimDialog asset={asset} onClose={() => setTrimOpen(false)} />}
+    </>
   )
 }
