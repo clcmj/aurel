@@ -15,7 +15,7 @@ const recorder: RecorderBridge = {
   setRecordingActive: (active) => ipcRenderer.send('recording:active', active),
   sendRecordingControl: (action) => ipcRenderer.send('recording:control-request', action),
   sendRecordingStatus: (status) => ipcRenderer.send('recording:status', status),
-  setWindowHidden: (hidden) => ipcRenderer.send('window:hidden', hidden),
+  setWindowHidden: (hidden) => ipcRenderer.invoke('window:hidden', hidden),
   onRecordingControl: (callback) => {
     const listener = (_event: Electron.IpcRendererEvent, action: 'toggle-pause' | 'stop' | 'show') => callback(action)
     ipcRenderer.on('recording:control', listener)

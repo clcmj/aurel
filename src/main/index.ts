@@ -63,7 +63,10 @@ function showRecordingCountdown(displayId?: number): Promise<void> {
       resolve()
     }
     countdown.on('closed', finish)
-    countdown.once('ready-to-show', () => countdown.showInactive())
+    countdown.once('ready-to-show', () => {
+      if (countdown.isDestroyed()) return
+      countdown.showInactive()
+    })
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>Aurel 倒计时</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{display:grid;place-items:center;background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}#number{width:240px;height:240px;display:grid;place-items:center;border-radius:50%;background:rgba(14,17,24,.9);border:2px solid rgba(255,255,255,.24);box-shadow:0 20px 60px rgba(0,0,0,.35),inset 0 0 0 10px rgba(255,255,255,.04);color:#fff;font-size:168px;font-weight:700;line-height:1;text-shadow:0 4px 18px rgba(0,0,0,.3);user-select:none}@media(prefers-color-scheme:light){#number{background:rgba(255,255,255,.94);color:#202633;border-color:rgba(36,46,62,.2)}}</style></head><body><div id="number">3</div></body></html>`
     void countdown.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html))
     countdown.webContents.once('did-finish-load', () => {
@@ -409,6 +412,7 @@ function registerIpc() {
     }
     recordingControlStatus = 'recording'
     showRecordingControls()
+    mainWindow?.hide()
     const shortcuts: Array<[string, 'toggle-pause' | 'stop' | 'show']> = [
       ['CommandOrControl+Shift+R', 'toggle-pause'],
       ['CommandOrControl+Shift+S', 'stop'],
@@ -427,10 +431,15 @@ function registerIpc() {
     updateRecordingControls(status)
   })
 
-  ipcMain.on('window:hidden', (_event, hidden: boolean) => {
+  ipcMain.handle('window:hidden', (_event, hidden: boolean) => {
     if (!mainWindow) return
-    if (hidden) mainWindow.hide()
-    else {
+    if (hidden) {
+      mainWindow.webContents.setBackgroundThrottling(false)
+      mainWindow.setIgnoreMouseEvents(true)
+      mainWindow.setOpacity(0)
+    } else {
+      mainWindow.setIgnoreMouseEvents(false)
+      mainWindow.setOpacity(1)
       mainWindow.show()
       mainWindow.focus()
     }

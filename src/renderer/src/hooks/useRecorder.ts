@@ -10,7 +10,6 @@ export type RecorderStatus = RecordingStatus
 interface StartOptions {
   target: CaptureTarget
   settings: RecordingSettings
-  hideWindow: boolean
 }
 
 export function useRecorder() {
@@ -62,21 +61,21 @@ export function useRecorder() {
     streamRef.current = null
   }, [])
 
-  const resetUi = useCallback(() => {
+  const resetUi = useCallback((restoreWindow = true) => {
     clearTimers()
     updateStatus('idle')
     setProgress(0)
     void window.recorder?.setRecordingActive(false)
-    void window.recorder?.setWindowHidden(false)
+    if (restoreWindow) void window.recorder?.setWindowHidden(false)
   }, [clearTimers, updateStatus])
 
-  const discard = useCallback(() => {
+  const discard = useCallback((restoreWindow = true) => {
     abortRef.current?.abort()
     abortRef.current = null
     if (assetRef.current) URL.revokeObjectURL(assetRef.current.url)
     assetRef.current = null
     setAsset(null)
-    resetUi()
+    resetUi(restoreWindow)
   }, [resetUi])
 
   const stopRecording = useCallback((): Promise<RecordedAsset> => {
@@ -221,12 +220,12 @@ export function useRecorder() {
     else if (statusRef.current === 'paused') resumeRecording()
   }, [pauseRecording, resumeRecording])
 
-  const startRecording = useCallback(async ({ target, settings, hideWindow }: StartOptions) => {
+  const startRecording = useCallback(async ({ target, settings }: StartOptions) => {
     if (statusRef.current !== 'idle') return
     setError('')
     setWarning('')
     setProgress(0)
-    discard()
+    discard(false)
 
     try {
       if (!('MediaRecorder' in window)) throw new Error('当前系统不支持视频编码')
@@ -294,7 +293,6 @@ export function useRecorder() {
       updateStatus('recording')
       timerRef.current = setInterval(() => setElapsed(readElapsed()), 200)
       void window.recorder?.setRecordingActive(true)
-      if (hideWindow) void window.recorder?.setWindowHidden(true)
 
       if (settings.outputFormat === 'gif') {
         autoStopRef.current = setTimeout(() => {

@@ -4,14 +4,12 @@ import { Toggle } from './Toggle'
 
 interface SettingsPanelProps {
   settings: RecordingSettings
-  hideWindow: boolean
   disabled: boolean
   systemAudioSupported: boolean
   onChange: (settings: RecordingSettings) => void
-  onHideWindowChange: (value: boolean) => void
 }
 
-export function SettingsPanel({ settings, hideWindow, disabled, systemAudioSupported, onChange, onHideWindowChange }: SettingsPanelProps) {
+export function SettingsPanel({ settings, disabled, systemAudioSupported, onChange }: SettingsPanelProps) {
   const update = <K extends keyof RecordingSettings>(key: K, value: RecordingSettings[K]) => onChange({ ...settings, [key]: value })
   const isGif = settings.outputFormat === 'gif'
 
@@ -86,11 +84,6 @@ export function SettingsPanel({ settings, hideWindow, disabled, systemAudioSuppo
         <span className="setting-icon"><Icon name="volume" size={18} /></span>
         <div className="setting-copy"><strong>系统声音</strong><span>{systemAudioSupported ? '录入设备播放的声音' : 'Windows 支持，其他系统请用麦克风'}</span></div>
         <Toggle label="系统声音" checked={settings.systemAudio} onChange={(value) => update('systemAudio', value)} disabled={disabled || !systemAudioSupported} />
-      </div>
-      <div className="setting-row">
-        <span className="setting-icon"><Icon name="window" size={18} /></span>
-        <div className="setting-copy"><strong>录制时隐藏窗口</strong><span>避免录到 Aurel 自己</span></div>
-        <Toggle label="录制时隐藏窗口" checked={hideWindow} onChange={onHideWindowChange} disabled={disabled} />
       </div>
 
       <div className="shortcut-card">

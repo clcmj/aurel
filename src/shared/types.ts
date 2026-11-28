@@ -90,7 +90,7 @@ export interface RecorderBridge {
   setRecordingActive: (active: boolean) => void
   sendRecordingControl: (action: 'toggle-pause' | 'stop') => void
   sendRecordingStatus: (status: RecordingStatus) => void
-  setWindowHidden: (hidden: boolean) => void
+  setWindowHidden: (hidden: boolean) => Promise<void>
   onRecordingControl: (callback: (action: 'toggle-pause' | 'stop' | 'show') => void) => () => void
   saveFile: (request: SaveFileRequest) => Promise<string | null>
   autoSaveFile: (request: SaveFileRequest) => Promise<string>

@@ -34,7 +34,6 @@ export default function App() {
   const [loadingSources, setLoadingSources] = useState(true)
   const [selectingRegion, setSelectingRegion] = useState(false)
   const [settings, setSettings] = useState<RecordingSettings>(defaultSettings)
-  const [hideWindow, setHideWindow] = useState(true)
   const [appInfo, setAppInfo] = useState<AppInfo>({ name: 'Aurel', version: '1.0.0', platform: 'darwin' })
   const [permissions, setPermissions] = useState<MediaPermissions>({ screen: 'granted', microphone: 'granted', accessibility: 'unknown' })
   const [permissionPrompted, setPermissionPrompted] = useState(false)
@@ -154,10 +153,12 @@ export default function App() {
     try {
       const granted = await window.recorder.requestScreenPermission()
       if (!granted) throw new Error('请先在系统设置中允许 Aurel 录制屏幕')
+      await window.recorder.setWindowHidden(true)
       const displayId = target.bounds?.displayId ?? sources.find((source) => source.id === target.sourceId)?.displayId
       await window.recorder.showCountdown(displayId)
-      await recorder.startRecording({ target, settings, hideWindow })
+      await recorder.startRecording({ target, settings })
     } catch (startError) {
+      await window.recorder.setWindowHidden(false)
       setGlobalError(startError instanceof Error ? startError.message : '无法开始录制')
     } finally {
       setStarting(false)
@@ -309,11 +310,9 @@ export default function App() {
             ) : (
               <SettingsPanel
                 settings={settings}
-                hideWindow={hideWindow}
                 disabled={busy}
                 systemAudioSupported={appInfo.platform === 'win32'}
                 onChange={setSettings}
-                onHideWindowChange={setHideWindow}
               />
             )}
           </aside>
